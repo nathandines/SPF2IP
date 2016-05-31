@@ -1,0 +1,20 @@
+language: python
+python:
+- '2.6'
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+install:
+- pip install -e .
+- pip install -r requirements-test.txt
+script: nosetests
+deploy:
+  provider: pypi
+  user: nathandines
+  password:
+    secure: XXmz9QRxpKSMDvgfnpSg+SYaOxjR6oRWyizpLTaNN44LRYJ/TGSDrhy73eAM0rp/PXyBKGjX3y5yjAmIGi4FpDSDicuNv6HmsenBa31VvWUT/TFRVteyBzO1uWT8LX6kN0/yRw13ZUzzQaD70eKFpOuVFKS91OfL2yowAmHLliPRp7DQY+Vc36e0VJw2u269ja7melBdjMoiibGQIl5/woYZD/LdfGYUUs7Fr5S3A3T4jWeTTPlh22c3KljsTzpEx1SxwYNR+SFc++DbtZzCkM7zIB8+SmgstSYOnXQX+svCijYzg7Qn4aRB73RAMf6BHlb5JKVqDlLVuBqZH1ETSdXBphyUV++/n4jsMGbIO5CTIhM2rvI8Z35Z5uGzZUry0TWtJK6npUyZped427kfE00a7KaHa24xXfPO33pVoPPF6h6e6sId6tCKlGG25kjnVO8ZigDzAeowPmYaXg3bPpQZT28T7V2MamlsC5mE/tHyr+gBLI3yG7sVmrxmNiRx5sMbWfSbf3v7mgzRsoiAWoGeUM2DTYxShzSW0QH756T/thRJcf3ZFLv0ycQNskVwL6P4PioKXVamXE0TSeAlk8OZj/nQs8C9rX5xzTX7Wy4J0OdQ0ePNNYspzDThoZUoWvMk1Aj0S7gWcxfwT5DvHKss8XsOZEEY0oQvNZJtS7M=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: nathandines/SPF2IP
