@@ -70,7 +70,7 @@ dns_records = {
     'AAAA': ['2a03:2880:f01c:601:1bad:babe:ffff:ffff']
   },
   'ipv41.local': {
-    'TXT': [['v=spf1 ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 -all']]
+    'TXT': [['v=spf1 ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
   },
   'ipv42.local': {
     'TXT': [['v=spf1 ip4:127.0.0.1/32 ip4:127.0.0.1/32 ip4:127.0.0.5/32 -all']]
@@ -79,7 +79,7 @@ dns_records = {
     'TXT': [['v=spf1 ip4:127.0.0.2/32 ip4:127.0.0.3/32 ip4:127.0.0.6 ip4:hello -all']]
   },
   'ipv61.local': {
-    'TXT': [['v=spf1 ip6:2a03:2880:f01c:601:dead:beef:0:1 ip6:1080::8:800:200C:417A/96 -all']]
+    'TXT': [['v=spf1 ip6:2a03:2880:f01c:601:dead:beef:0:1 ip6:1080::8:800:200C:417A/96 ip6: -all']]
   },
   'ipv62.local': {
     'TXT': [['v=spf1 ip6:2a03:2880:f01c:601:1bad:BABE:0:1 ip6:1080::8:800:200C:417A/96 -all']]
