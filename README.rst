@@ -15,6 +15,14 @@ servers without exposing the SMTP ports to the world.
 
 ---
 
+INSTALLATION
+
+Install from pip::
+
+  pip install SPF2IP
+
+---
+
 COMMON USAGE
 
 Command line::
