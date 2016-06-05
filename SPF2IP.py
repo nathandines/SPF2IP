@@ -89,7 +89,7 @@ class SPF2IP:
     results = dns_request_unicode(domain,'TXT')
     for rrset in results:
       for txtrecord in rrset:
-        if re.match(r'v=spf1',txtrecord):
+        if re.match(r'v=spf1 ',txtrecord):
           return sorted(list(set(txtrecord.lower().split())))
 
   def Worker(self,domain,ip_version):

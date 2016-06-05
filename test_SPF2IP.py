@@ -94,6 +94,10 @@ dns_records = {
     'A': ['127.0.0.1'],
     'TXT': [['Dud TXT record']]
   },
+  'invalidspf.local': {
+    'A': ['127.0.0.1'],
+    'TXT': [['v=spf1abc ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
+  },
   'include.local': {
     'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all','This is a dud TXT record']]
   },
@@ -170,6 +174,20 @@ class SPF2IPTestCases(unittest.TestCase):
       self.assertEqual(sorted(list(set(output))),sorted(output))
       self.assertEqual(output,sorted([entry.lower() for entry in expected]))
 
+  def test_spf_list_invalid_spf(self):
+    with patch('dns.resolver.query',mock) as dns.resolver.query:
+      expected = None
+      lookup = SPF2IP(None)
+      output = lookup.GetSPFArray('invalidspf.local')
+      self.assertEqual(output,expected)
+
+  def test_spf_list_without_spf(self):
+    with patch('dns.resolver.query',mock) as dns.resolver.query:
+      expected = None
+      lookup = SPF2IP(None)
+      output = lookup.GetSPFArray('noemail.local')
+      self.assertEqual(output,expected)
+
   def test_included_list_is_string_list(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
@@ -200,6 +218,15 @@ class SPF2IPTestCases(unittest.TestCase):
       expected = []
       lookup = SPF2IP(None)
       output = lookup.FindIncludes('noemail.local')
+      self.assertTrue(type(output) is list)
+      self.assertEqual(sorted(list(set(output))),sorted(output))
+      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+
+  def test_included_invalid_spf(self):
+    with patch('dns.resolver.query',mock) as dns.resolver.query:
+      expected = []
+      lookup = SPF2IP(None)
+      output = lookup.FindIncludes('invalidspf.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
       self.assertEqual(output,sorted([entry.lower() for entry in expected]))
