@@ -49,7 +49,7 @@ dns_records = {
     'TXT': [['v=spf1 mx/24 -all']]
   },
   'mxrecords_external.local': {
-    'TXT': [['v=spf1 mx:mxrecords.local -all']]
+    'TXT': [['v=spf1 mx:mxrecords.local mx:noexist.local -all']]
   },
   'mxrecords_external_slash.local': {
     'TXT': [['v=spf1 mx:mxrecords.local/25 -all']]
@@ -100,6 +100,15 @@ dns_records = {
   },
   'include.local': {
     'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all','This is a dud TXT record']]
+  },
+  'includeparent.local': {
+    'TXT': [['v=spf1 include:includea.local include:includeb.local -all','This is a dud TXT record']]
+  },
+  'includea.local': {
+    'TXT': [['v=spf1 ip4:127.0.0.1 include:includeb.local -all','This is a dud TXT record']]
+  },
+  'includeb.local': {
+    'TXT': [['v=spf1 ip4:127.0.0.2 include:includea.local -all','This is a dud TXT record']]
   },
   'gmail.com': {
     'A': ['127.0.0.1'],
@@ -227,6 +236,18 @@ class SPF2IPTestCases(unittest.TestCase):
       expected = []
       lookup = SPF2IP(None)
       output = lookup.FindIncludes('invalidspf.local')
+      self.assertTrue(type(output) is list)
+      self.assertEqual(sorted(list(set(output))),sorted(output))
+      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+
+  def test_included_loop(self):
+    with patch('dns.resolver.query',mock) as dns.resolver.query:
+      expected = [
+        '127.0.0.1/32',
+        '127.0.0.2/32'
+      ]
+      lookup = SPF2IP('includeparent.local')
+      output = lookup.IPArray()
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
       self.assertEqual(output,sorted([entry.lower() for entry in expected]))
