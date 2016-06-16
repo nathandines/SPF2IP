@@ -55,16 +55,14 @@ class SPF2IP:
       for domain in self.included_domains:
         if domain not in CheckedDomains:
           NewIncludes = self.FindIncludes(domain)
-          if NewIncludes:
-            for entry in NewIncludes:
-              self.included_domains.append(entry)
+          for entry in NewIncludes:
+            self.included_domains.append(entry)
           CheckedDomains.append(domain)
 
     for domain in self.included_domains:
       data = self.Worker(domain,ip_version)
-      if data:
-        for entry in data:
-          ips.append(entry)
+      for entry in data:
+        ips.append(entry)
     return sorted(list(set(ips)))
 
   def FindIncludes(self,domain):
