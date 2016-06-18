@@ -70,7 +70,7 @@ dns_records = {
     'AAAA': ['2a03:2880:f01c:601:1bad:babe:ffff:ffff']
   },
   'ipv41.local': {
-    'TXT': [['v=spf1 ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
+    'TXT': [['v=spf1 ip4:127.0.0.1/32 IP4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
   },
   'ipv42.local': {
     'TXT': [['v=spf1 ip4:127.0.0.1/32 ip4:127.0.0.1/32 ip4:127.0.0.5/32 -all']]
@@ -99,7 +99,7 @@ dns_records = {
     'TXT': [['v=spf1abc ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
   },
   'include.local': {
-    'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all','This is a dud TXT record']]
+    'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv42.LOCAL include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all','This is a dud TXT record']]
   },
   'includeparent.local': {
     'TXT': [['v=spf1 include:includea.local include:includeb.local -all','This is a dud TXT record']]

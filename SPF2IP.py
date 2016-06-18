@@ -80,7 +80,7 @@ class SPF2IP:
       regex = re.match(r'^\+?(?:include:|(?:exp|redirect)=)(?P<value>.*)',entry)
       if regex:
         if regex.group('value') not in self.included_domains:
-          includes.append(regex.group('value').lower())
+          includes.append(regex.group('value'))
     return sorted(list(set(includes)))
 
   def GetSPFArray(self, domain):
@@ -115,10 +115,10 @@ class SPF2IP:
       return output
 
     for entry in entries:
-      regex = re.match(r'^\+?(?P<type>[^:/]+)(?::(?P<address>[^/]+))?(?P<mask>/[0-9]+)?',entry, flags=re.IGNORECASE)
+      regex = re.match(r'^\+?(?P<type>[^:/]+)(?::(?P<address>[^/]+))?(?P<mask>/[0-9]+)?',entry)
       values = []
       if regex:
-        if regex.group('type').lower() == ip_types[ip_version]['spf_ip_prefix']:
+        if regex.group('type') == ip_types[ip_version]['spf_ip_prefix']:
           if regex.group('mask'):
             values.append(regex.group('address')+regex.group('mask'))
           else:
