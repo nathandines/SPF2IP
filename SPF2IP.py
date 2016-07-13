@@ -76,13 +76,7 @@ class SPF2IP:
   def FindIncludes(self,domain):
     includes = []
 
-    try:
-      entries = self.GetSPFArray(domain)
-    except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
-      return includes
-
-    if not entries:
-      return includes
+    entries = self.GetSPFArray(domain)
 
     for entry in entries:
       regex = re.match(r'^\+?(?:include:|(?:exp|redirect)=)(?P<value>.*)',entry)
@@ -97,6 +91,8 @@ class SPF2IP:
       for txtrecord in rrset:
         if re.match(r'v=spf1 ',txtrecord):
           return sorted(list(set(txtrecord.lower().split())))
+    # Default return
+    return []
 
   def Worker(self,domain,ip_version):
     output = []
@@ -128,39 +124,27 @@ class SPF2IP:
           else:
             values.append(regex.group('address'))
         elif regex.group('type').upper() == ip_types[ip_version]['dns_hostname_type']:
-          try:
-            if regex.group('address'):
-              address_results = dns_request_unicode(regex.group('address'),ip_types[ip_version]['dns_hostname_type'])
-            else:
-              address_results = dns_request_unicode(domain,ip_types[ip_version]['dns_hostname_type'])
-          except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
-            pass
+          if regex.group('address'):
+            address_results = dns_request_unicode(regex.group('address'),ip_types[ip_version]['dns_hostname_type'])
           else:
+            address_results = dns_request_unicode(domain,ip_types[ip_version]['dns_hostname_type'])
+          for address in address_results:
+            if regex.group('mask'):
+              values.append(address+regex.group('mask'))
+            else:
+              values.append(address)
+        elif regex.group('type').upper() == 'MX':
+          if regex.group('address'):
+            mx_results = dns_request_unicode(regex.group('address'),'MX')
+          else:
+            mx_results = dns_request_unicode(domain,'MX')
+          for exchange in mx_results:
+            address_results = dns_request_unicode(exchange,ip_types[ip_version]['dns_hostname_type'])
             for address in address_results:
               if regex.group('mask'):
                 values.append(address+regex.group('mask'))
               else:
                 values.append(address)
-        elif regex.group('type').upper() == 'MX':
-          try:
-            if regex.group('address'):
-              mx_results = dns_request_unicode(regex.group('address'),'MX')
-            else:
-              mx_results = dns_request_unicode(domain,'MX')
-          except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
-            pass
-          else:
-            for exchange in mx_results:
-              try:
-                address_results = dns_request_unicode(exchange,ip_types[ip_version]['dns_hostname_type'])
-              except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
-                pass
-              else:
-                for address in address_results:
-                  if regex.group('mask'):
-                    values.append(address+regex.group('mask'))
-                  else:
-                    values.append(address)
       for value in values:
         try:
           result = ip_types[ip_version]['ipaddress_class'](value,strict=False)

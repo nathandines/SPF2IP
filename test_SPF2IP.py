@@ -185,14 +185,14 @@ class SPF2IPTestCases(unittest.TestCase):
 
   def test_spf_list_invalid_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
-      expected = None
+      expected = []
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('invalidspf.local')
       self.assertEqual(expected,output)
 
   def test_spf_list_without_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
-      expected = None
+      expected = []
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('noemail.local')
       self.assertEqual(expected,output)
@@ -238,7 +238,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('invalidspf.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(expected,output)
+      self.assertEqual(expected,output) 
 
   def test_included_loop(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
