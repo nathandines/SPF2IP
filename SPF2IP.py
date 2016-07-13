@@ -44,8 +44,8 @@ def dns_request_unicode(hostname,record_type,*args,**kwargs):
   return output
 
 ip_sorter = {
-  '4': lambda addr: tuple(int(v) for v in addr.split('/')[0].split('.')),
-  '6': lambda addr: tuple(int(v,16) if v != '' else 0 for v in addr.split('/')[0].split(':'))
+  '4': lambda addr: int(ipaddress.IPv4Address(addr.split('/')[0])),
+  '6': lambda addr: int(ipaddress.IPv6Address(addr.split('/')[0]))
 }
 
 class SPF2IP:

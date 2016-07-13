@@ -85,7 +85,7 @@ dns_records = {
     'TXT': [['v=spf1 ip6:2a03:2880:f01c:601:1bad:BABE:0:1 ip6:1080::8:800:200C:417A/96 -all']]
   },
   'ipv63.local': {
-    'TXT': [['v=spf1 ip6:::1 ip6:10z0::8:800:200C:417A/96 ip6:hello -all']]
+    'TXT': [['v=spf1 ip6:::1:1 ip6:::9 ip6:10z0::8:800:200C:417A/96 ip6:hello -all']]
   },
   'redirect.local': {
     'TXT': [['v=spf1 redirect=include.local -all']]
@@ -574,7 +574,8 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_ip6_results(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        '::1/128',
+        '::9/128',
+        '::1:1/128',
         '1080::8:800:0:0/96',
         '2a03:2880:f01c:601:1bad:babe:0:1/128',
         '2a03:2880:f01c:601:dead:beef:0:1/128'
