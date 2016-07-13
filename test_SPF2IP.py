@@ -168,34 +168,34 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_spf_list_is_string_list_with_prefix(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        'v=spf1',
+        '-all',
         'include:ipv41.local',
         'include:ipv42.local',
         'include:ipv43.local',
         'include:ipv61.local',
         'include:ipv62.local',
         'include:ipv63.local',
-        '-all'
+        'v=spf1'
       ]
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('include.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_spf_list_invalid_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = None
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('invalidspf.local')
-      self.assertEqual(output,expected)
+      self.assertEqual(expected,output)
 
   def test_spf_list_without_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = None
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('noemail.local')
-      self.assertEqual(output,expected)
+      self.assertEqual(expected,output)
 
   def test_included_list_is_string_list(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -211,7 +211,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('include.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_included_without_includes(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -220,7 +220,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('ipv41.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_included_without_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -229,7 +229,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('noemail.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_included_invalid_spf(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -238,7 +238,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('invalidspf.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_included_loop(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -250,7 +250,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.IPArray()
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_single_domain_with_a(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -262,7 +262,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('hostrecords.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -277,7 +277,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('hostrecords_slash.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -292,7 +292,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('hostrecords_external.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -307,7 +307,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('hostrecords_external_slash.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -315,14 +315,14 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_single_domain_with_aaaa(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        '2a03:2880:f01c:601:dead:beef:0:1/128',
-        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128'
+        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128',
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('hostrecords.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -330,14 +330,14 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_single_domain_with_aaaa_slash(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        '2a03:2880:f01c:601:dead:beef::/96',
-        '2a03:2880:f01c:601:1bad:babe::/96'
+        '2a03:2880:f01c:601:1bad:babe::/96',
+        '2a03:2880:f01c:601:dead:beef::/96'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('hostrecords_slash.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -345,14 +345,14 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_single_domain_with_aaaa_external(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        '2a03:2880:f01c:601:dead:beef:0:1/128',
-        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128'
+        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128',
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('hostrecords_external.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -360,14 +360,14 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_single_domain_with_aaaa_external_slash(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
-        '2a03:2880:f01c:601:dead:beef::/97',
-        '2a03:2880:f01c:601:1bad:babe:8000:0/97'
+        '2a03:2880:f01c:601:1bad:babe:8000:0/97',
+        '2a03:2880:f01c:601:dead:beef::/97'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('hostrecords_external_slash.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -384,7 +384,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -399,7 +399,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords_slash.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -416,7 +416,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords_external.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -432,7 +432,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords_external_slash.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -444,7 +444,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords_external_longslash.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -454,14 +454,14 @@ class SPF2IPTestCases(unittest.TestCase):
       expected = [
         '::1/128',
         '::2/128',
-        '2a03:2880:f01c:601:dead:beef:0:1/128',
-        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128'
+        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128',
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('mxrecords.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -476,7 +476,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('mxrecords_slash.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -486,14 +486,14 @@ class SPF2IPTestCases(unittest.TestCase):
       expected = [
         '::1/128',
         '::2/128',
-        '2a03:2880:f01c:601:dead:beef:0:1/128',
-        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128'
+        '2a03:2880:f01c:601:1bad:babe:ffff:ffff/128',
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('mxrecords_external.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -502,14 +502,14 @@ class SPF2IPTestCases(unittest.TestCase):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
         '::/97',
-        '2a03:2880:f01c:601:dead:beef::/97',
-        '2a03:2880:f01c:601:1bad:babe:8000:0/97'
+        '2a03:2880:f01c:601:1bad:babe:8000:0/97',
+        '2a03:2880:f01c:601:dead:beef::/97'
       ]
       lookup = SPF2IP(None)
       output = lookup.Worker('mxrecords_external_longslash.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -524,7 +524,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('ipv41.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -533,13 +533,13 @@ class SPF2IPTestCases(unittest.TestCase):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       lookup = SPF2IP(None)
       expected = [
-        '127.0.0.1/32',
-        '127.0.0.5/32'
+        '1080::8:800:0:0/96',
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
-      output = lookup.Worker('ip61.local','6')
+      output = lookup.Worker('ipv61.local','6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertNotEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -551,7 +551,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.Worker('noemail.local','4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_ip4_results(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -566,7 +566,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.IPArray('4')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv4Network(entry))
@@ -574,16 +574,16 @@ class SPF2IPTestCases(unittest.TestCase):
   def test_ip6_results(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
       expected = [
+        '::1/128',
         '1080::8:800:0:0/96',
-        '2a03:2880:f01c:601:dead:beef:0:1/128',
         '2a03:2880:f01c:601:1bad:babe:0:1/128',
-        '::1/128'
+        '2a03:2880:f01c:601:dead:beef:0:1/128'
       ]
       lookup = SPF2IP('redirect.local')
       output = lookup.IPArray('6')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
       for entry in output:
         self.assertTrue(isinstance(entry,unicode))
         self.assertTrue(ipaddress.IPv6Network(entry))
@@ -595,7 +595,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.IPArray()
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
   def test_nonexistent_domain_results(self):
     expected = []
@@ -604,7 +604,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.IPArray()
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(output,sorted([entry.lower() for entry in expected]))
+      self.assertEqual(expected,output)
 
 if __name__ == '__main__':
   unittest.main()

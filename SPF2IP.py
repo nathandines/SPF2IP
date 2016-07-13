@@ -12,8 +12,11 @@ except NameError:
   unicode = str
 
 def dns_request_unicode(hostname,record_type,*args,**kwargs):
-  result = dns.resolver.query(hostname,record_type,*args,**kwargs)
   output = []
+  try:
+    result = dns.resolver.query(hostname,record_type,*args,**kwargs)
+  except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
+    return output
   for entry in result:
     if record_type == "A":
       value = entry.address
@@ -40,6 +43,11 @@ def dns_request_unicode(hostname,record_type,*args,**kwargs):
       output.append(suboutput)
   return output
 
+ip_sorter = {
+  '4': lambda addr: tuple(int(v) for v in addr.split('/')[0].split('.')),
+  '6': lambda addr: tuple(int(v,16) if v != '' else 0 for v in addr.split('/')[0].split(':'))
+}
+
 class SPF2IP:
   def __init__(self, domain):
     self.included_domains = [ domain ]
@@ -63,7 +71,7 @@ class SPF2IP:
       data = self.Worker(domain,ip_version)
       for entry in data:
         ips.append(entry)
-    return sorted(list(set(ips)))
+    return sorted(list(set(ips)),key=ip_sorter[ip_version])
 
   def FindIncludes(self,domain):
     includes = []
@@ -97,7 +105,7 @@ class SPF2IP:
       '4': {
         'dns_hostname_type': 'A',
         'spf_ip_prefix': 'ip4',
-        'ipaddress_class': ipaddress.IPv4Network
+        'ipaddress_class': ipaddress.IPv4Network 
       },
       '6': {
         'dns_hostname_type': 'AAAA',
@@ -106,11 +114,7 @@ class SPF2IP:
       }
     }
 
-    try:
-      entries = self.GetSPFArray(domain)
-    except (dns.resolver.NoAnswer,dns.resolver.NXDOMAIN):
-      return output
-
+    entries = self.GetSPFArray(domain)
     if not entries:
       return output
 
@@ -165,7 +169,7 @@ class SPF2IP:
         else:
           output.append(result.compressed.lower())
 
-    return sorted(list(set(output)))
+    return sorted(list(set(output)),key=ip_sorter[ip_version])
 
 def main():
   parser = argparse.ArgumentParser(description="Script to extract IP addresses from a SPF record into a list")
