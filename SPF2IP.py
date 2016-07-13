@@ -111,8 +111,6 @@ class SPF2IP:
     }
 
     entries = self.GetSPFArray(domain)
-    if not entries:
-      return output
 
     for entry in entries:
       regex = re.match(r'^\+?(?P<type>[^:/]+)(?::(?P<address>[^/]+))?(?P<mask>/[0-9]+)?',entry)
