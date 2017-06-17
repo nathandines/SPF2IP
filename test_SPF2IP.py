@@ -98,17 +98,21 @@ dns_records = {
     'A': ['127.0.0.1'],
     'TXT': [['v=spf1abc ip4:127.0.0.1/32 ip4:127.0.0.1 ip4:127.0.0.5/32 ip4 -all']]
   },
+  'splitspf.local': {
+    'A': ['127.0.0.1'],
+    'TXT': [['v=spf1 ip4:127.0.0.1/32 IP4:127.0.0.1 i','p4:127.0.0.5/32 ip4 -all']]
+  },
   'include.local': {
-    'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv42.LOCAL include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all','This is a dud TXT record']]
+    'TXT': [['v=spf1 include:ipv41.local include:ipv41.local include:ipv42.local include:ipv42.LOCAL include:ipv43.local include:ipv61.local include:ipv62.local include:ipv63.local -all'],['This is a dud TXT record']]
   },
   'includeparent.local': {
-    'TXT': [['v=spf1 include:includea.local include:includeb.local -all','This is a dud TXT record']]
+    'TXT': [['v=spf1 include:includea.local include:includeb.local -all'],['This is a dud TXT record']]
   },
   'includea.local': {
-    'TXT': [['v=spf1 ip4:127.0.0.1 include:includeb.local -all','This is a dud TXT record']]
+    'TXT': [['v=spf1 ip4:127.0.0.1 include:includeb.local -all'],['This is a dud TXT record']]
   },
   'includeb.local': {
-    'TXT': [['v=spf1 ip4:127.0.0.2 include:includea.local -all','This is a dud TXT record']]
+    'TXT': [['v=spf1 ip4:127.0.0.2 include:includea.local -all'],['This is a dud TXT record']]
   },
   'gmail.com': {
     'A': ['127.0.0.1'],
@@ -158,12 +162,8 @@ class SPF2IPTestCases(unittest.TestCase):
             self.assertTrue(ipaddress.IPv4Address(value))
           elif record_type == "AAAA":
             self.assertTrue(ipaddress.IPv6Address(value))
-          elif record_type == "MX":
+          elif record_type in ["TXT","MX"]:
             self.assertTrue(isinstance(value,unicode))
-          elif record_type == "TXT":
-            self.assertTrue(isinstance(value,list))
-            for val in value:
-              self.assertTrue(isinstance(val,unicode))
 
   def test_spf_list_is_string_list_with_prefix(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:
@@ -188,6 +188,18 @@ class SPF2IPTestCases(unittest.TestCase):
       expected = []
       lookup = SPF2IP(None)
       output = lookup.GetSPFArray('invalidspf.local')
+      self.assertEqual(expected,output)
+
+  def test_spf_list_split_spf(self):
+    with patch('dns.resolver.query',mock) as dns.resolver.query:
+      expected = [
+        '127.0.0.1/32',
+        '127.0.0.5/32'
+      ]
+      lookup = SPF2IP('splitspf.local')
+      output = lookup.IPArray()
+      self.assertTrue(type(output) is list)
+      self.assertEqual(sorted(list(set(output))),sorted(output))
       self.assertEqual(expected,output)
 
   def test_spf_list_without_spf(self):
@@ -238,7 +250,7 @@ class SPF2IPTestCases(unittest.TestCase):
       output = lookup.FindIncludes('invalidspf.local')
       self.assertTrue(type(output) is list)
       self.assertEqual(sorted(list(set(output))),sorted(output))
-      self.assertEqual(expected,output) 
+      self.assertEqual(expected,output)
 
   def test_included_loop(self):
     with patch('dns.resolver.query',mock) as dns.resolver.query:

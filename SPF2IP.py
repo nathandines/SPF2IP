@@ -34,13 +34,10 @@ def dns_request_unicode(hostname,record_type,*args,**kwargs):
         value = value.__str__().encode('utf-8').decode('utf-8')
       output.append(value)
     elif record_type == "TXT":
-      value = entry.strings
-      suboutput = []
-      for val in value:
-        if type(val) is not unicode:
-          val = val.decode('utf-8')
-        suboutput.append(val)
-      output.append(suboutput)
+      value = ''.join([str(ent) for ent in entry.strings])
+      if type(value) is not unicode:
+        value = value.decode('utf-8')
+      output.append(value)
   return output
 
 ip_sorter = {
@@ -88,9 +85,8 @@ class SPF2IP:
   def GetSPFArray(self, domain):
     results = dns_request_unicode(domain,'TXT')
     for rrset in results:
-      for txtrecord in rrset:
-        if re.match(r'v=spf1 ',txtrecord):
-          return sorted(list(set(txtrecord.lower().split())))
+      if re.match(r'v=spf1 ',rrset):
+        return sorted(list(set(rrset.lower().split())))
     # Default return
     return []
 
@@ -101,7 +97,7 @@ class SPF2IP:
       '4': {
         'dns_hostname_type': 'A',
         'spf_ip_prefix': 'ip4',
-        'ipaddress_class': ipaddress.IPv4Network 
+        'ipaddress_class': ipaddress.IPv4Network
       },
       '6': {
         'dns_hostname_type': 'AAAA',
