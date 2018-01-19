@@ -29,14 +29,22 @@ def dns_request_unicode(hostname,record_type,*args,**kwargs):
         value = value.decode('utf-8')
       output.append(value)
     elif record_type == "MX":
-      value = entry.exchange
-      if type(value) is not unicode:
-        value = value.__str__().encode('utf-8').decode('utf-8')
+      try:
+        value = entry.exchange.decode('utf-8')
+      except AttributeError as err:
+        if err.args[0] == "'Name' object has no attribute 'decode'":
+          value = unicode(entry.exchange)
+        else:
+          raise
       output.append(value)
     elif record_type == "TXT":
-      value = ''.join([str(ent) for ent in entry.strings])
-      if type(value) is not unicode:
-        value = value.decode('utf-8')
+      value_array = []
+      for ent in entry.strings:
+        if type(ent) is not unicode:
+          value_array.append(ent.decode('utf-8'))
+        else:
+          value_array.append(ent)
+      value = ''.join(value_array)
       output.append(value)
   return output
 
