@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='SPF2IP',
-    version='1.0.4',
+    version='1.0.5',
 
     description='Python module to get IP addresses from an SPF record',
     long_description=long_description,
