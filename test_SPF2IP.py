@@ -125,11 +125,13 @@ dns_records = {
 class fakedns:
   def __init__(self,value,record_type):
     if record_type == 'TXT':
-      self.strings = value
+      self.strings = []
+      for entry in value:
+        self.strings.append(entry.encode('utf-8'))
     elif record_type == 'A' or record_type == 'AAAA':
-      self.address = value
+      self.address = value.encode('utf-8')
     elif record_type == 'MX':
-      self.exchange = value
+      self.exchange = value.encode('utf-8')
 def fake_dns_resolver(hostname,record_type):
   try:
     dns_records[hostname]
